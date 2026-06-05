@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PORT=5000
+PORT=${1:-5050}
 VENV_DIR="venv"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$SCRIPT_DIR"

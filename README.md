@@ -32,7 +32,7 @@ chmod +x setup_and_run.sh
 ./setup_and_run.sh
 ```
 
-This creates a virtual environment, installs dependencies, starts the server, and opens your browser to `http://localhost:5000`.
+This creates a virtual environment, installs dependencies, starts the server, and opens your browser to `http://localhost:5050`.
 
 ## Manual Setup
 
@@ -40,10 +40,10 @@ This creates a virtual environment, installs dependencies, starts the server, an
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-uvicorn app:app --port 5000
+uvicorn app:app --port 5050
 ```
 
-Then open http://localhost:5000 in your browser.
+Then open http://localhost:5050 in your browser.
 
 ## Usage
 
