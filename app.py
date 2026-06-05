@@ -11,8 +11,7 @@ templates = Jinja2Templates(directory="templates")
 def _is_vision_model(model_name: str) -> bool:
     try:
         info = ollama.show(model_name)
-        model_info = info.get("model_info", {})
-        return any("vision" in k or "projector" in k for k in model_info)
+        return "vision" in (info.capabilities or [])
     except Exception:
         return False
 
