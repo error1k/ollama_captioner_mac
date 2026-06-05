@@ -4,10 +4,19 @@ A local web application for captioning image datasets using Ollama vision models
 
 Forked from [eddcgpro/ollama_captioner](https://github.com/eddcgpro/ollama_captioner) and ported to macOS with FastAPI.
 
+## Changes from Upstream
+
+- **Flask → FastAPI + Uvicorn** — async backend, better performance
+- **Vision-only model filter** — the model dropdown only shows vision-capable models (detected via `ollama.show()` capabilities at startup)
+- **macOS launcher script** — replaces the Windows `.bat` with `setup_and_run.sh` (venv, deps, browser open)
+- **Trimmed dependencies** — removed unused `torch`, `torchvision`, `transformers`, `Pillow`, and `requests`
+- **Default port 5050** — avoids conflict with macOS AirPlay Receiver on port 5000
+- **Frontend unchanged** — `index.html` is identical to upstream; API contracts are the same
+
 ## Features
 
 - Live Ollama connection monitor
-- Dynamic model selector (fetches locally installed vision models)
+- Dynamic model selector (vision-capable models only)
 - Drag-and-drop image upload with batch processing
 - Editable captions with queue control and abort
 - Export: CSV, combined TXT, individual TXTs, ZIP (for Kohya/LoRA pipelines)
