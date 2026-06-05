@@ -2,40 +2,43 @@
 
 ## Status
 
-**Phase:** Planning complete, ready for implementation  
+**Phase:** Implementation complete, published to GitHub  
 **Date:** 2026-06-05
 
 ## What's Done
 
-- Explored upstream repo (eddcgpro/ollama_captioner) — Flask web app with 3 routes, browser UI, Windows-only launcher
-- Confirmed torch/torchvision/transformers/Pillow are unused dead dependencies (pending grep verification after clone)
-- Decided: minimal port + migrate Flask → FastAPI + Uvicorn for consistency with other projects
-- Design spec written: `docs/superpowers/specs/2026-06-05-macos-port-design.md`
-- Implementation plan written: `docs/superpowers/plans/2026-06-05-macos-port.md`
+- Cloned upstream, verified unused deps (torch/torchvision/transformers/Pillow/requests all dead)
+- Created FastAPI backend (`app.py`) replacing Flask — same 3 endpoints, same JSON contracts
+- Vision-only model filter: checks `ollama.show()` capabilities at startup, only lists vision models
+- macOS launcher script (`setup_and_run.sh`) — venv, deps, browser open, graceful shutdown
+- Trimmed `requirements.txt` to only what's used (fastapi, uvicorn, jinja2, python-multipart, ollama)
+- Test suite: 6 async tests covering all endpoints (all passing)
+- Changed default port to 5050 (macOS AirPlay Receiver occupies 5000)
+- README with "Changes from Upstream" section
+- Published to GitHub: https://github.com/error1k/ollama_captioner_mac
+- Opened license request issue on upstream: https://github.com/eddcgpro/ollama_captioner/issues/1
 
 ## In Progress
 
-- Nothing actively in progress — paused before execution
+- Nothing actively in progress
 
 ## Next Steps
 
-1. Choose execution approach (subagent-driven or inline)
-2. Execute Task 1: Clone upstream, verify unused deps, copy files
-3. Execute Tasks 2–6: requirements.txt, tests, FastAPI app, launcher script, README
-4. Execute Task 7: End-to-end manual verification
-5. Execute Task 8: Clean up temp directory, final commit
+1. Manual end-to-end verification (Task 7 from plan) — run the app, test captioning, test exports
+2. Check if upstream author responds to license request
+3. Optional: add a LICENSE file once upstream clarifies
 
 ## Open Questions
 
-- None — plan is ready to execute
+- Awaiting license clarification from upstream author
 
 ## Gotchas
 
-- The upstream `index.html` is 1349 lines — don't modify it, the API endpoints match exactly
-- `requests` is imported but never used in upstream `app.py` — safe to drop
-- FastAPI needs `python-multipart` for form/file upload parsing (easy to forget)
-- The `file` parameter in the caption endpoint can arrive as `None` if no file is sent — handle explicitly
+- Port 5000 is taken by macOS ControlCenter (AirPlay Receiver) — use 5050 or pass custom port as arg
+- `ollama.show()` returns a Pydantic model, not a dict — use `.capabilities` attribute, not `.get("model_info")`
+- `TemplateResponse` in Starlette 0.40+ requires keyword args (`name=`, `request=`), not positional
+- Vision models are loaded at startup — restart the server after pulling new models
 
 ## Resume Prompt
 
-Read `docs/session-handoff.md` and `docs/superpowers/plans/2026-06-05-macos-port.md`. Ask user which execution approach they want (subagent-driven or inline), then begin executing the plan starting at Task 1.
+Read `docs/session-handoff.md`. Project is fully implemented and published. Remaining work: manual e2e verification and checking upstream license response.
