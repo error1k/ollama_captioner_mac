@@ -8,6 +8,30 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 
+def _is_vision_model(model_name: str) -> bool:
+    try:
+        info = ollama.show(model_name)
+        model_info = info.get("model_info", {})
+        return any("vision" in k or "projector" in k for k in model_info)
+    except Exception:
+        return False
+
+
+def _load_vision_models() -> list[str]:
+    try:
+        res = ollama.list()
+        all_models = [m.model for m in res.models]
+        vision = [m for m in all_models if _is_vision_model(m)]
+        print(f"[INFO] Found {len(vision)} vision models out of {len(all_models)} total")
+        return vision
+    except Exception as e:
+        print(f"[ERROR] Could not connect to Ollama at startup: {e}")
+        return []
+
+
+_vision_models = _load_vision_models()
+
+
 def call_ollama_api(model_name: str, prompt: str, image_bytes: bytes) -> str:
     response = ollama.generate(
         model=model_name,
@@ -25,13 +49,9 @@ async def index(request: Request):
 
 @app.get("/api/models")
 async def list_models():
-    try:
-        res = ollama.list()
-        model_names = [m.model for m in res.models]
-        return {"models": model_names, "status": "online"}
-    except Exception as e:
-        print(f"[ERROR] Could not connect to local Ollama service: {e}")
-        return {"models": [], "status": "offline", "error": str(e)}
+    if _vision_models:
+        return {"models": _vision_models, "status": "online"}
+    return {"models": [], "status": "offline", "error": "No vision models found (is Ollama running?)"}
 
 
 @app.post("/api/caption")

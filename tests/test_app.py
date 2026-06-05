@@ -25,12 +25,7 @@ async def test_index_returns_html(client):
 
 @pytest.mark.anyio
 async def test_list_models_online(client):
-    mock_model = MagicMock()
-    mock_model.model = "gemma3:latest"
-    mock_response = MagicMock()
-    mock_response.models = [mock_model]
-
-    with patch("app.ollama.list", return_value=mock_response):
+    with patch("app._vision_models", ["gemma3:latest"]):
         response = await client.get("/api/models")
         assert response.status_code == 200
         data = response.json()
@@ -40,7 +35,7 @@ async def test_list_models_online(client):
 
 @pytest.mark.anyio
 async def test_list_models_offline(client):
-    with patch("app.ollama.list", side_effect=Exception("Connection refused")):
+    with patch("app._vision_models", []):
         response = await client.get("/api/models")
         assert response.status_code == 200
         data = response.json()
