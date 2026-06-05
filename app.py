@@ -20,7 +20,7 @@ def call_ollama_api(model_name: str, prompt: str, image_bytes: bytes) -> str:
 
 @app.get("/")
 async def index(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(name="index.html", request=request)
 
 
 @app.get("/api/models")
